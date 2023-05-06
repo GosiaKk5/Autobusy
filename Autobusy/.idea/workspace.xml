@@ -5,7 +5,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="23fcb338-4e8a-4c4b-908f-5bbed02412aa" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Autobusy/src/main/java/org/example/Bus.java" beforeDir="false" afterPath="$PROJECT_DIR$/Autobusy/src/main/java/org/example/Bus.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Autobusy/src/main/java/org/example/Line.java" beforeDir="false" afterPath="$PROJECT_DIR$/Autobusy/src/main/java/org/example/Line.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -38,6 +40,17 @@
     "last_opened_file_path": "/home/filipjedrzejewski/Autobusy/Autobusy"
   }
 }]]></component>
+  <component name="RunManager">
+    <configuration name="MainConfig" type="Application" factoryName="Application">
+      <option name="ALTERNATIVE_JRE_PATH" value="17" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true" />
+      <option name="MAIN_CLASS_NAME" value="org.example.Main" />
+      <module name="Autobusy" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+  </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">

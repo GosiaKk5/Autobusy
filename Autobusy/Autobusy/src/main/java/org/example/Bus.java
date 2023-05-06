@@ -16,8 +16,6 @@ public class Bus {
     public int busCapacity;
     public Line line;
 
-    //kom testowy
-
     public Bus() {
     }
 
