@@ -27,9 +27,7 @@ public class Main {
     public static void main(final String[] args) throws Exception {
         final Session session = getSession();
         try {
-//            Transaction tx = session.beginTransaction();
-//            session.save(product);
-//            tx.commit();
+//            
         } finally {
             session.close();
         }
