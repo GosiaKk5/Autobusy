@@ -1,6 +1,7 @@
 package org.example;
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 <<<<<<< Updated upstream
 =======
 
@@ -9,6 +10,9 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+=======
+
+>>>>>>> parent of 4e89ab3 (nothing)
 =======
 
 >>>>>>> parent of 4e89ab3 (nothing)
@@ -26,6 +30,7 @@ public class Line {
     }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 <<<<<<< Updated upstream
     public Line(int length, String start, String end){
 
@@ -33,6 +38,10 @@ public class Line {
         this.start=start;
         this.end=end;
 
+=======
+    public Line(int busCapacity){
+        this.busCapacity = busCapacity;
+>>>>>>> parent of 4e89ab3 (nothing)
 =======
     public Line(int busCapacity){
         this.busCapacity = busCapacity;
