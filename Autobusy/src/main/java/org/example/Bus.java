@@ -17,9 +17,12 @@ public class Bus {
 
     public Bus() {
     }
-
     public Bus(int busCapacity){
+        this.busCapacity=busCapacity;
+    }
+    public Bus(int busCapacity, Line line){
         this.busCapacity = busCapacity;
+        this.line=line;
     }
 
 

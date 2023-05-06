@@ -1,9 +1,6 @@
 package org.example;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 
 @Entity
 public class Line {
@@ -12,8 +9,6 @@ public class Line {
 
     private int lineID;
     public int length;
-    public Line line;
-
     public String start;
     public String end;
 
