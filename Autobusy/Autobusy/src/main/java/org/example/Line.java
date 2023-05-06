@@ -1,5 +1,9 @@
 package org.example;
 
+<<<<<<< Updated upstream
+=======
+
+>>>>>>> Stashed changes
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -18,6 +22,7 @@ public class Line {
     public Line() {
     }
 
+<<<<<<< Updated upstream
     public Line(int length, String start, String end){
 
         this.length=length;
@@ -25,4 +30,6 @@ public class Line {
         this.end=end;
 
     }
+=======
+>>>>>>> Stashed changes
 }
