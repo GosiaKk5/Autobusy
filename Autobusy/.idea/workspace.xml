@@ -4,6 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
+    <list default="true" id="23fcb338-4e8a-4c4b-908f-5bbed02412aa" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/Autobusy/src/main/java/org/example/Bus.java" beforeDir="false" afterPath="$PROJECT_DIR$/Autobusy/src/main/java/org/example/Bus.java" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -31,6 +34,7 @@
   "keyToString": {
     "ASKED_ADD_EXTERNAL_FILES": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
+    "git-widget-placeholder": "main",
     "last_opened_file_path": "/home/filipjedrzejewski/Autobusy/Autobusy"
   }
 }]]></component>
