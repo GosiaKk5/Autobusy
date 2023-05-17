@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import static java.lang.Math.abs;
+
 public class DataCreator {
 
     private Random rnd;
@@ -24,7 +26,7 @@ public class DataCreator {
 
     private int randInt(int a, int b){
         //zwraca liczbe typu int z przedzialu <a;b)
-        return a + rnd.nextInt() % (b-a);
+        return a + abs(rnd.nextInt() % (b-a));
     }
 
     public List<Line> createLines(int n){
@@ -85,7 +87,7 @@ public class DataCreator {
 
         int actHour = actualTime.getHour();
 
-        int hourDelta = 3;
+        int hourDelta = 2;
 
         for(int i=0;i<n;i++){
             int hour = randInt(actHour-hourDelta, actHour);
