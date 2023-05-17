@@ -8,7 +8,7 @@ import org.hibernate.cfg.Configuration;
 
 public class Main {
     private static final SessionFactory ourSessionFactory;
-//hjgj
+
     static {
         try {
             Configuration configuration = new Configuration();
@@ -32,7 +32,7 @@ public class Main {
             session.save(line);
 
             tx.commit();
-//            
+
         } finally {
             session.close();
         }

@@ -16,11 +16,15 @@ public class Course {
 
     public Course() {}
 
-    public Course(LocalTime startTime, LocalTime endTime, Bus bus){
+    public Course(LocalTime startTime, Bus bus){
 
         this.startTime=startTime;
-        this.endTime=endTime;
+        this.endTime=null;
         this.bus=bus;
 
+    }
+
+    public void endCourse(LocalTime end){
+        this.endTime = end;
     }
 }
