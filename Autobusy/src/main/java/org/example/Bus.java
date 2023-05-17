@@ -26,5 +26,9 @@ public class Bus {
         this.line=line;
     }
 
+    public int getId(){
+        return this.busID;
+    }
+
 
 }

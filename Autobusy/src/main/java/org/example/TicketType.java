@@ -28,4 +28,8 @@ public class TicketType {
         this.price=price;
 
     }
+
+    public int getId(){
+        return this.ticketTypeID;
+    }
 }

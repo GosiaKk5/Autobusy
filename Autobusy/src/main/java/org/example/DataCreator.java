@@ -99,7 +99,8 @@ public class DataCreator {
                 while (true){
                     hour = randInt(hour, actHour);
                     minute = randInt(0, 60);
-                    LocalTime courseEndTime = LocalTime.of(hour, minute);
+                    int seconds = randInt(0, 60);
+                    LocalTime courseEndTime = LocalTime.of(hour, minute, seconds);
                     if(courseEndTime.isAfter(courseStartTime)){
                         newCourse.endCourse(courseEndTime);
                         break;
@@ -113,5 +114,8 @@ public class DataCreator {
         return result;
     }
 
+    public BoughtTicket buyTicket(TicketType tt, Course course){
+        return new BoughtTicket(LocalTime.now(), course, tt);
+    }
 
 }

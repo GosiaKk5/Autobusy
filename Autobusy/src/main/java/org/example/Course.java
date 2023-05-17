@@ -27,4 +27,8 @@ public class Course {
     public void endCourse(LocalTime end){
         this.endTime = end;
     }
+
+    public int getId(){
+        return this.courseID;
+    }
 }

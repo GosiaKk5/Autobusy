@@ -22,4 +22,8 @@ public class Line {
         this.finish = finish;
     }
 
+    public int getId(){
+        return this.lineID;
+    }
+
 }
