@@ -25,16 +25,16 @@ public class DataCreator {
     }
 
     private int randInt(int a, int b){
-        //zwraca liczbe typu int z przedzialu <a;b)
-        return a + abs(rnd.nextInt() % (b-a));
+        //zwraca liczbe typu int z przedzialu <a;b>
+        return a + abs(rnd.nextInt() % (b-a+1));
     }
 
     public List<Line> createLines(int n){
         List<Line> result = new ArrayList<>();
 
         for(int i=0;i<n;i++){
-            String start = this.stopNames[randInt(0, this.stopNames.length)];
-            String end = this.stopNames[randInt(0, this.stopNames.length)];
+            String start = this.stopNames[randInt(0, this.stopNames.length-1)];
+            String end = this.stopNames[randInt(0, this.stopNames.length-1)];
             int len = randInt(1, 60);
 
             result.add(new Line(len, start, end));
@@ -90,17 +90,17 @@ public class DataCreator {
         int hourDelta = 2;
 
         for(int i=0;i<n;i++){
-            int hour = randInt(actHour-hourDelta, actHour);
-            int minute = randInt(0, 60);
-            LocalTime courseStartTime = LocalTime.of(hour, minute);
+            int hour1 = randInt((actHour-hourDelta+24)%24, (actHour-1+24)%24);
+            int minute = randInt(0, 59);
+            LocalTime courseStartTime = LocalTime.of(hour1, minute);
             Course newCourse = new Course(courseStartTime, buses.get(i%nOfBuses));
             //niektore kursy beda juz zakonczone
             if(randInt(0, 10) < 5){
                 while (true){
-                    hour = randInt(hour, actHour);
-                    minute = randInt(0, 60);
-                    int seconds = randInt(0, 60);
-                    LocalTime courseEndTime = LocalTime.of(hour, minute, seconds);
+                    int hour2 = randInt(hour1, (actHour-1+24)%24);
+                    minute = randInt(0, 59);
+                    int seconds = randInt(0, 59);
+                    LocalTime courseEndTime = LocalTime.of(hour2, minute, seconds);
                     if(courseEndTime.isAfter(courseStartTime)){
                         newCourse.endCourse(courseEndTime);
                         break;

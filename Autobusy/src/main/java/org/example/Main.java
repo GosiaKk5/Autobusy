@@ -70,7 +70,7 @@ public class Main {
             System.out.println("+ wypisz bilety");
             System.out.println("+ wypisz linie");
             System.out.println("+ wypisz kursy");
-            System.out.println("+ sprawdz *id_biletu*");
+            System.out.println("+ sprawdz *id_biletu* *id_kursu_gdzie_bilet_jest_sprawdzany*");
             System.out.println("+ kup *id_typu_biletu* *id_kursu*");
             return 0;
         }
