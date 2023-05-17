@@ -5,24 +5,25 @@ import jakarta.persistence.*;
 import java.time.LocalTime;
 
 @Entity
-public class Ticket {
+public class BoughtTicket {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
 
     private int boughtTicketID;
-    public LocalTime boughtTime;
+    private LocalTime boughtTime;
 
-    public int courseID;
     @ManyToOne
-    public TicketType ticket;
+    private Course course;
+    @ManyToOne
+    private TicketType ticket;
 
-    public Ticket() {}
+    public BoughtTicket() {}
 
-    public Ticket(int boughtTicketID, LocalTime boughtTime, int courseID, TicketType ticket){
+    public BoughtTicket(int boughtTicketID, LocalTime boughtTime, Course course, TicketType ticket){
 
         this.boughtTicketID=boughtTicketID;
         this.boughtTime=boughtTime;
-        this.courseID=courseID;
+        this.course = course;
         this.ticket=ticket;
 
     }

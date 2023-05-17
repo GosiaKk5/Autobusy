@@ -12,17 +12,14 @@ public class Course {
     public LocalTime startTime;
     public LocalTime endTime;
     @ManyToOne
-    public Line line;
-    @ManyToOne
     public Bus bus;
 
     public Course() {}
 
-    public Course(LocalTime startTime, LocalTime endTime, Line line, Bus bus){
+    public Course(LocalTime startTime, LocalTime endTime, Bus bus){
 
         this.startTime=startTime;
         this.endTime=endTime;
-        this.line=line;
         this.bus=bus;
 
     }

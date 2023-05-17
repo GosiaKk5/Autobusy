@@ -11,7 +11,7 @@ public class TicketType {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
 
-    private int ticketID;
+    private int ticketTypeID;
     public int time;
 
     public String name;

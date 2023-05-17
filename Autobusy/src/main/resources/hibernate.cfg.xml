@@ -10,14 +10,14 @@
 <!-- <property name="connection.password"/> -->
 
 <!-- DB schema will be updated if needed -->
-<property name="hibernate.hbm2ddl.auto">update</property>
+<property name="hibernate.hbm2ddl.auto">create</property>
 <property name="show_sql">true</property>
 <property name="format_sql">true</property>
 
 <mapping class="org.example.Bus"></mapping>
 <mapping class="org.example.Course"></mapping>
 <mapping class="org.example.Line"></mapping>
-<mapping class="org.example.Ticket"></mapping>
+<mapping class="org.example.BoughtTicket"></mapping>
 <mapping class="org.example.TicketType"></mapping>
 </session-factory>
 </hibernate-configuration>
