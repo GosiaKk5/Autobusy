@@ -27,6 +27,11 @@ public class Main {
     public static void main(final String[] args) throws Exception {
         final Session session = getSession();
         try {
+            Transaction tx = session.beginTransaction();
+            Line line = new Line(10, "Kopiec", "Most");
+            session.save(line);
+
+            tx.commit();
 //            
         } finally {
             session.close();

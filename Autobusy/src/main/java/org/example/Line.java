@@ -8,18 +8,18 @@ public class Line {
     @GeneratedValue(strategy = GenerationType.AUTO)
 
     private int lineID;
-    public int length;
+    public Integer length;
     public String start;
-    public String end;
+    public String finish;
 
     public Line() {
     }
 
-    public Line(int length, String start, String end){
+    public Line(Integer length, String start, String finish){
 
-        this.length=length;
-        this.start=start;
-        this.end=end;
+        this.length = length;
+        this.start = start;
+        this.finish = finish;
     }
 
 }
