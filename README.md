@@ -1,6 +1,6 @@
 Temat: aplikacja do kupowania biletów autobusowych
 
-Technologia: Java, Oracle 
+Technologia: Java, Hibernate
 
 Członkowie grupy:
 - Małgorzata Krupanek
