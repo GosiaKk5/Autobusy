@@ -13,7 +13,7 @@ public class Bus {
     public int busCapacity;
 
     @ManyToOne
-    public Line line;   
+    private Line line;
 
     public Bus() {
     }
@@ -30,5 +30,15 @@ public class Bus {
         return this.busID;
     }
 
+    public int getBusCapacity() {
+        return busCapacity;
+    }
 
+    public Line getLine() {
+        return line;
+    }
+
+    public void setLine(Line line) {
+        this.line = line;
+    }
 }

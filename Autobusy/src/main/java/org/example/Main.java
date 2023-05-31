@@ -1,6 +1,5 @@
 package org.example;
 
-import org.apache.derby.iapi.db.Factory;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -11,6 +10,8 @@ import java.time.LocalTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
+
+
 
 public class Main {
     private static final SessionFactory ourSessionFactory;
@@ -82,7 +83,7 @@ public class Main {
                 List<TicketType> tts = session.createQuery("SELECT t FROM TicketType t", TicketType.class).getResultList();
                 System.out.println("Dostepne typy biletów:");
                 for(TicketType tt : tts){
-                    System.out.println(tt.getId()+": "+tt.name+" => "+tt.price);
+                    System.out.println(tt.getId()+": "+tt.getName()+" => "+tt.getPrice());
                 }
                 return 0;
             }
@@ -92,17 +93,17 @@ public class Main {
                 List<Line> lines = session.createQuery("SELECT l FROM Line l", Line.class).getResultList();
                 System.out.println("Linie autobusowe:");
                 for(Line l : lines){
-                    System.out.println(l.getId()+": "+l.start+" -> "+l.finish+" ("+l.length+")");
+                    System.out.println(l.getId()+": "+l.getStart()+" -> "+l.getFinish()+" ("+l.getLength()+")");
                 }
                 return 0;
             }
 
             //kursy
             if(input.get(1).equals("kursy")){
-                List<Course> courses = session.createQuery("SELECT c FROM Course c WHERE c.endTime IS NOT NULL ", Course.class).getResultList();
+                List<Course> courses = session.createQuery("SELECT c FROM Course c, Line l, Bus b WHERE c.endTime IS NOT NULL and c.bus=b.busID and b.line=l.lineID ", Course.class).getResultList();
                 System.out.println("Aktualne kursy:");
                 for(Course c : courses){
-                    System.out.println(c.getId()+": "+c.bus.line.start+" -> "+c.bus.line.finish+" ("+c.bus.getId()+")");
+                    System.out.println(c.getId()+": "+c.getBus().getLine().getStart()+" -> "+c.getBus().getLine().getFinish()+" ("+c.getBus().getId()+")");
                 }
                 return 0;
             }
@@ -125,11 +126,11 @@ public class Main {
                     correct = true;
 
                     //sprawdzilem ze istnieje/istnial taki bilet, teraz sprawdzam czy jest poprawny
-                    LocalTime goodTo = bt.boughtTime.plusMinutes(bt.ticket.time);
+                    LocalTime goodTo = bt. getBoughtTime().plusMinutes(bt.getTicket().getTime());
                     if(goodTo.isBefore(LocalTime.now())){
                         correct = false;
                     }
-                    if(bt.ticket.isAllLine && bt.course.getId()==actualCurseID){
+                    if(bt.getTicket().isAllLine() && bt.getCourse().getId()==actualCurseID){
                         correct = true;
                     }
 

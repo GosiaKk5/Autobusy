@@ -9,10 +9,10 @@ public class Course {
     @GeneratedValue(strategy = GenerationType.AUTO)
 
     private int courseID;
-    public LocalTime startTime;
-    public LocalTime endTime;
+    private LocalTime startTime;
+    private LocalTime endTime;
     @ManyToOne
-    public Bus bus;
+    private Bus bus;
 
     public Course() {}
 
@@ -30,5 +30,16 @@ public class Course {
 
     public int getId(){
         return this.courseID;
+    }
+
+    public LocalTime getStartTime() {
+        return startTime;
+    }
+    public LocalTime getEndTime() {
+        return endTime;
+    }
+
+    public Bus getBus() {
+        return bus;
     }
 }

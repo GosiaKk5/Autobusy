@@ -8,9 +8,24 @@ public class Line {
     @GeneratedValue(strategy = GenerationType.AUTO)
 
     private int lineID;
-    public Integer length;
-    public String start;
-    public String finish;
+    private Integer length;
+    private String start;
+    private String finish;
+
+    public Integer getLength() {
+        return length;
+    }
+
+
+    public String getStart() {
+        return start;
+    }
+
+
+    public String getFinish() {
+        return finish;
+    }
+
 
     public Line() {
     }

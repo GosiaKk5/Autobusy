@@ -10,12 +10,12 @@ public class BoughtTicket {
     @GeneratedValue(strategy = GenerationType.AUTO)
 
     private int boughtTicketID;
-    public LocalTime boughtTime;
+    private LocalTime boughtTime;
 
     @ManyToOne
-    public Course course;
+    private Course course;
     @ManyToOne
-    public TicketType ticket;
+    private TicketType ticket;
 
     public BoughtTicket() {}
 
@@ -31,6 +31,17 @@ public class BoughtTicket {
         return this.boughtTicketID;
     }
 
+    public LocalTime getBoughtTime() {
+        return boughtTime;
+    }
 
+    public Course getCourse() {
+        return course;
+    }
+
+
+    public TicketType getTicket() {
+        return ticket;
+    }
 
 }

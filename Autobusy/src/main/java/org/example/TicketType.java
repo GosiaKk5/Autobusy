@@ -12,11 +12,11 @@ public class TicketType {
     @GeneratedValue(strategy = GenerationType.AUTO)
 
     private int ticketTypeID;
-    public int time;
+    private int time;
 
-    public String name;
-    public boolean isAllLine;
-    public int price;
+    private String name;
+    private boolean isAllLine;
+    private int price;
 
     public TicketType() {}
 
@@ -31,5 +31,28 @@ public class TicketType {
 
     public int getId(){
         return this.ticketTypeID;
+    }
+
+    public int getTime() {
+        return time;
+    }
+
+
+    public String getName() {
+        return name;
+    }
+
+
+    public boolean isAllLine() {
+        return isAllLine;
+    }
+
+
+    public int getPrice() {
+        return price;
+    }
+
+    public void setPrice(int price) {
+        this.price = price;
     }
 }

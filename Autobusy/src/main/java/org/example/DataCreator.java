@@ -11,15 +11,21 @@ public class DataCreator {
 
     private Random rnd;
 
-    private String[] stopNames;
+    private BusStop[] busStops;
 
 
     public DataCreator(){
         this.rnd = new Random();
 
-        this.stopNames = new String[]{"Kopiec", "Zamek", "Kościół", "AGH", "Miasteczko",
+        String[] stopNames = new String[]{"Kopiec", "Zamek", "Kościół", "AGH", "Miasteczko",
                                     "Kopalnia", "UJ", "ZOO", "Wisła", "Błonia", "Akademik",
                                     "Dworzec PKP", "Dworzec PKS", "Lotnisko", "Rynek", "Centrum Handlowe"};
+
+        this.busStops = new BusStop[stopNames.length];
+
+        for(int i=0;i<stopNames.length;i++){
+            this.busStops[i] = new BusStop(stopNames[i]);
+        }
 
 
     }
@@ -33,8 +39,8 @@ public class DataCreator {
         List<Line> result = new ArrayList<>();
 
         for(int i=0;i<n;i++){
-            String start = this.stopNames[randInt(0, this.stopNames.length-1)];
-            String end = this.stopNames[randInt(0, this.stopNames.length-1)];
+            String start = this.busStops[randInt(0, this.busStops.length-1)].getName();
+            String end = this.busStops[randInt(0, this.busStops.length-1)].getName();
             int len = randInt(1, 60);
 
             result.add(new Line(len, start, end));
