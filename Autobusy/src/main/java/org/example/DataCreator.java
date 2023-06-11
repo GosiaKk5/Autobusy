@@ -39,11 +39,18 @@ public class DataCreator {
         List<Line> result = new ArrayList<>();
 
         for(int i=0;i<n;i++){
-            String start = this.busStops[randInt(0, this.busStops.length-1)].getName();
-            String end = this.busStops[randInt(0, this.busStops.length-1)].getName();
+
+            int nOfStops = this.randInt(5, 20);
+
+            BusStop[] lineStops = new BusStop[nOfStops];
+            for(int j=0;j<nOfStops;j++){
+                lineStops[j] = busStops[this.randInt(0, this.busStops.length-1)];
+            }
+
             int len = randInt(1, 60);
 
-            result.add(new Line(len, start, end));
+            result.add(new Line(len));
+
 
         }
         

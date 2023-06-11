@@ -20,5 +20,6 @@
     <mapping class="org.example.BoughtTicket"></mapping>
     <mapping class="org.example.TicketType"></mapping>
     <mapping class="org.example.BusStop"></mapping>
+    <mapping class="org.example.StopOnLine"></mapping>
 </session-factory>
 </hibernate-configuration>
