@@ -1,5 +1,7 @@
 package org.example;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -11,23 +13,10 @@ public class DataCreator {
 
     private Random rnd;
 
-    private BusStop[] busStops;
 
 
     public DataCreator(){
         this.rnd = new Random();
-
-        String[] stopNames = new String[]{"Kopiec", "Zamek", "Kościół", "AGH", "Miasteczko",
-                                    "Kopalnia", "UJ", "ZOO", "Wisła", "Błonia", "Akademik",
-                                    "Dworzec PKP", "Dworzec PKS", "Lotnisko", "Rynek", "Centrum Handlowe"};
-
-        this.busStops = new BusStop[stopNames.length];
-
-        for(int i=0;i<stopNames.length;i++){
-            this.busStops[i] = new BusStop(stopNames[i]);
-        }
-
-
     }
 
     private int randInt(int a, int b){
@@ -35,26 +24,52 @@ public class DataCreator {
         return a + abs(rnd.nextInt() % (b-a+1));
     }
 
-    public List<Line> createLines(int n){
+    public List<BusStop> createBusStops(){
+        List<BusStop> result = new ArrayList<>();
+
+        String[] stopNames = new String[]{"Kopiec", "Zamek", "Kościół", "AGH", "Miasteczko",
+                "Kopalnia", "UJ", "ZOO", "Wisła", "Błonia", "Akademik",
+                "Dworzec PKP", "Dworzec PKS", "Lotnisko", "Rynek", "Centrum Handlowe",
+                "Lodowisko", "Park", "Stadion", "Fort", "Rondo", "Zajezdnia", "Osiedle",
+                "Pizzeria", "Las", "Muzeum", "Obserwatorium astronomiczne"};
+
+        for(int i=0;i<stopNames.length;i++){
+            result.add(new BusStop(stopNames[i]));
+        }
+
+        return result;
+    }
+
+    public List<Line> createLines(int n, List<BusStop> busStops){
         List<Line> result = new ArrayList<>();
 
         for(int i=0;i<n;i++){
-
-            int nOfStops = this.randInt(5, 20);
-
-            BusStop[] lineStops = new BusStop[nOfStops];
-            for(int j=0;j<nOfStops;j++){
-                lineStops[j] = busStops[this.randInt(0, this.busStops.length-1)];
-            }
-
-            int len = randInt(1, 60);
-
-            result.add(new Line(len));
-
-
+            result.add(new Line());
         }
         
         return  result;
+    }
+
+
+    public List<StopOnLine> addStopsToLines(List<BusStop> stops, List<Line> lines){
+        List<StopOnLine> result = new ArrayList<>();
+        for(Line line : lines){
+            int nOfStops = this.randInt(5, 25);
+            for(int j=0;j<nOfStops;j++){
+                BusStop stop = stops.get(this.randInt(0, stops.size()-1));
+                LocalTime time = LocalTime.of(0, 0);
+                if(j > 0){
+                    time = LocalTime.of(0, this.randInt(1, 15));
+                }
+
+                int dist = this.randInt(1, 5);
+
+                result.add(line.addStopToLine(stop, time, dist));
+            }
+        }
+
+        return result;
+
     }
 
     public List<TicketType> createTicketTypes(){
@@ -93,34 +108,48 @@ public class DataCreator {
         return result;
     }
 
-    public List<Course> createCourses(int n, List<Bus> buses, LocalTime actualTime){
+    public List<Course> createCourses(int n, List<Bus> buses, LocalDateTime actualTime){
+
+        LocalDate date = actualTime.toLocalDate();
+        LocalTime now = actualTime.toLocalTime();
+
         List<Course> result = new ArrayList<>();
 
         int nOfBuses = buses.size();
 
-        int actHour = actualTime.getHour();
+        int actHour = now.getHour();
 
         int hourDelta = 2;
 
         for(int i=0;i<n;i++){
             int hour1 = randInt((actHour-hourDelta+24)%24, (actHour-1+24)%24);
             int minute = randInt(0, 59);
-            LocalTime courseStartTime = LocalTime.of(hour1, minute);
-            Course newCourse = new Course(courseStartTime, buses.get(i%nOfBuses));
-            //niektore kursy beda juz zakonczone
-            if(randInt(0, 10) < 5){
-                while (true){
-                    int hour2 = randInt(hour1, (actHour-1+24)%24);
-                    minute = randInt(0, 59);
-                    int seconds = randInt(0, 59);
-                    LocalTime courseEndTime = LocalTime.of(hour2, minute, seconds);
-                    if(courseEndTime.isAfter(courseStartTime)){
-                        newCourse.endCourse(courseEndTime);
-                        break;
-                    }
-                }
 
+            LocalTime courseStartTime = LocalTime.of(hour1, minute);
+            LocalDateTime cst = courseStartTime.atDate(date);
+
+            Course newCourse = new Course(cst, buses.get(i%nOfBuses));
+
+            //sprawdzanie kiedy kurs sie zakonczyl/ma sie zakonczyc
+            LocalTime courseTime = newCourse.getBus().getLine().getTimeLength();
+
+            LocalTime courseEndTime = courseStartTime.plusHours(courseTime.getHour());
+            courseEndTime = courseEndTime.plusMinutes(courseTime.getMinute());
+
+
+            LocalDateTime cet = courseEndTime.atDate(date);
+
+            //jesli kurs przeszedl przez polnoc to zmieniam dzien konca kursu na kolejny
+            if(cst.isAfter(cet)){
+                cet = cet.plusDays(1);
             }
+
+            //sprawdzam czy kurs sie juz zakonczyl
+            if(cet.isBefore(actualTime)){
+                newCourse.endCourse(cet);
+            }
+
+            //dodaje kurs do wynikowej listy
             result.add(newCourse);
         }
 

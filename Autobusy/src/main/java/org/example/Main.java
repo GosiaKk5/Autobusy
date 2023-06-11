@@ -6,6 +6,7 @@ import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.hibernate.cfg.Configuration;
 
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Arrays;
 import java.util.List;
@@ -32,10 +33,22 @@ public class Main {
     }
 
     private static void fillDatabase(Session session, DataCreator creator){
+        //dodaje przystanki
+        List<BusStop> stops = creator.createBusStops();
+        for(BusStop stop : stops){
+            session.save(stop);
+        }
+
         //dodaje linie
-        List<Line> lines = creator.createLines(10);
+        List<Line> lines = creator.createLines(20, stops);
         for(Line line : lines){
             session.save(line);
+        }
+
+        //dodaje przystanki do linii
+        List<StopOnLine> lineStops = creator.addStopsToLines(stops, lines);
+        for(StopOnLine stop : lineStops){
+            session.save(stop);
         }
 
         //dodaje typy biletow
@@ -51,7 +64,7 @@ public class Main {
         }
 
         //dodaje kursy
-        List<Course> courses = creator.createCourses(50, buses, LocalTime.now());
+        List<Course> courses = creator.createCourses(50, buses, LocalDateTime.now());
         for(Course course : courses){
             session.save(course);
         }
@@ -71,6 +84,7 @@ public class Main {
             System.out.println("+ wypisz bilety");
             System.out.println("+ wypisz linie");
             System.out.println("+ wypisz kursy");
+            System.out.println("+ wypisz kurs *id_kursu*");
             System.out.println("+ sprawdz *id_biletu* *id_kursu_gdzie_bilet_jest_sprawdzany*");
             System.out.println("+ kup *id_typu_biletu* *id_kursu*");
             return 0;
@@ -105,6 +119,36 @@ public class Main {
                 for(Course c : courses){
                     System.out.println(c.getId()+": "+c.getBus().getLine().getStart()+" -> "+c.getBus().getLine().getFinish()+" ("+c.getBus().getId()+")");
                 }
+                return 0;
+            }
+
+            //dany kurs
+            if(input.get(1).equals("kurs")){
+                int courseID = Integer.parseInt(input.get(2));
+                System.out.println(courseID);
+                List<Course> courses = session.createQuery("SELECT c FROM Course c, Line l, Bus b WHERE c.endTime IS NOT NULL and c.bus=b.busID and b.line=l.lineID", Course.class).getResultList();
+
+                for(Course c : courses){
+                    if(c.getId() == courseID){
+                        System.out.println("Przystanki kursu nr. "+courseID+" ( "+c.getBus().getLine().getStart()+" -> "+c.getBus().getLine().getFinish()+" ):");
+                        LocalDateTime sdt = c.getStartTime();
+                        int distance = 0;
+                        for(int i=0;i<c.getBus().getLine().getNoStops();i++){
+                            //zbieram dane
+                            StopOnLine sol = c.getBus().getLine().getBusStop(i);
+                            sdt = sdt.plusHours(sol.getDeltaTime().getHour());
+                            sdt = sdt.plusMinutes(sol.getDeltaTime().getMinute());
+                            distance += sol.getDistance();
+                            String stopName = sol.getBusStop().getName();
+
+                            //print
+                            System.out.println((i+1)+". "+stopName+",\t data: "+sdt.toLocalDate()+",\t godzina: "+sdt.toLocalTime()+",\t odległość: "+distance+" km");
+
+                        }
+                        return 0;
+                    }
+                }
+                System.out.println("Nie znaleziono takiego kursu!");
                 return 0;
             }
 

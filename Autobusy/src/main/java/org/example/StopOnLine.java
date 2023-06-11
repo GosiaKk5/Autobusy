@@ -12,10 +12,9 @@ import java.util.Set;
 public class StopOnLine {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    private int stopOnLineID;
 
-    private int stopID;
-
-    private int order;
+    private Integer orderOnLine;
 
     private LocalTime deltaTime;
 
@@ -31,8 +30,8 @@ public class StopOnLine {
     public StopOnLine() {
     }
 
-    public StopOnLine(Line line, BusStop busStop, int order, LocalTime deltaTime, int distance) {
-        this.order = order;
+    public StopOnLine(Line line, BusStop busStop, Integer order, LocalTime deltaTime, int distance) {
+        this.orderOnLine = order;
         this.line = line;
         this.busStop = busStop;
         this.deltaTime = deltaTime;
@@ -41,11 +40,11 @@ public class StopOnLine {
 
 
     public int getId(){
-        return this.stopID;
+        return this.stopOnLineID;
     }
 
-    public int getOrder(){
-        return this.order;
+    public int getOrderOnLine(){
+        return this.orderOnLine;
     }
 
     public Line getLine(){

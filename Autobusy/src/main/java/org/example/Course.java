@@ -2,6 +2,7 @@ package org.example;
 
 import jakarta.persistence.*;
 
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 @Entity
 public class Course {
@@ -9,14 +10,14 @@ public class Course {
     @GeneratedValue(strategy = GenerationType.AUTO)
 
     private int courseID;
-    private LocalTime startTime;
-    private LocalTime endTime;
+    private LocalDateTime startTime;
+    private LocalDateTime endTime;
     @ManyToOne
     private Bus bus;
 
     public Course() {}
 
-    public Course(LocalTime startTime, Bus bus){
+    public Course(LocalDateTime startTime, Bus bus){
 
         this.startTime=startTime;
         this.endTime=null;
@@ -24,7 +25,7 @@ public class Course {
 
     }
 
-    public void endCourse(LocalTime end){
+    public void endCourse(LocalDateTime end){
         this.endTime = end;
     }
 
@@ -32,10 +33,10 @@ public class Course {
         return this.courseID;
     }
 
-    public LocalTime getStartTime() {
+    public LocalDateTime getStartTime() {
         return startTime;
     }
-    public LocalTime getEndTime() {
+    public LocalDateTime getEndTime() {
         return endTime;
     }
 

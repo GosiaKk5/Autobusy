@@ -16,7 +16,7 @@ public class Line {
     private int lineID;
 
     @OneToMany
-    private List<StopOnLine> stops;
+    private Set<StopOnLine> stops;
 
     public int getLength() {
         int length = 0;
@@ -39,22 +39,33 @@ public class Line {
         return this.stops.size();
     }
 
-    public StopOnLine getStop(int i){
-        if(i >= this.getNoStops()){
-            return null;
+    public StopOnLine getBusStop(int i){
+        for(StopOnLine stop : this.stops){
+            if(stop.getOrderOnLine() == i){
+                return stop;
+            }
         }
-        return this.stops.get(i);
+        return null;
     }
 
-    public void addStopToLine(BusStop stop, LocalTime deltaTime, int distance){
+    public String getStart(){
+        return this.getBusStop(0).getBusStop().getName();
+    }
+
+    public String getFinish(){
+        return this.getBusStop(this.getNoStops()-1).getBusStop().getName();
+    }
+
+    public StopOnLine addStopToLine(BusStop stop, LocalTime deltaTime, int distance){
         StopOnLine newStop = new StopOnLine(this, stop, this.getNoStops(), deltaTime, distance);
         this.stops.add(newStop);
         stop.getLines().add(newStop);
+        return  newStop;
     }
 
 
     public Line() {
-        this.stops = new ArrayList<StopOnLine>();
+        this.stops = new HashSet<StopOnLine>();
     }
 
     public int getId(){

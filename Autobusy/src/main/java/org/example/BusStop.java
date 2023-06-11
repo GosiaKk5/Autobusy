@@ -16,18 +16,18 @@ public class BusStop {
     private String name;
 
     @OneToMany
-    private List<StopOnLine> linesBelongs;
+    private Set<StopOnLine> linesBelongs;
 
     public BusStop() {
-        this.linesBelongs = new ArrayList<StopOnLine>();
+        this.linesBelongs = new HashSet<StopOnLine>();
     }
 
     public BusStop(String name){
         this.name = name;
-        this.linesBelongs = new ArrayList<StopOnLine>();
+        this.linesBelongs = new HashSet<StopOnLine>();
     }
 
-    public List<StopOnLine> getLines(){
+    public Set<StopOnLine> getLines(){
         return this.linesBelongs;
     }
 
