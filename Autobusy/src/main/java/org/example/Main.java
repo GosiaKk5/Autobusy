@@ -40,7 +40,7 @@ public class Main {
         }
 
         //dodaje linie
-        List<Line> lines = creator.createLines(20, stops);
+        List<Line> lines = creator.createLines(20);
         for(Line line : lines){
             session.save(line);
         }

@@ -40,7 +40,7 @@ public class DataCreator {
         return result;
     }
 
-    public List<Line> createLines(int n, List<BusStop> busStops){
+    public List<Line> createLines(int n){
         List<Line> result = new ArrayList<>();
 
         for(int i=0;i<n;i++){
@@ -69,7 +69,6 @@ public class DataCreator {
         }
 
         return result;
-
     }
 
     public List<TicketType> createTicketTypes(){
