@@ -15,6 +15,8 @@ import java.util.Scanner;
 
 
 public class Main {
+
+    public static final String ANSI_CYAN = "\u001B[36m";
     private static final SessionFactory ourSessionFactory;
 
     static {
@@ -315,23 +317,23 @@ public class Main {
                                     found=true;
                                     //sprawdzenie poprawnosci przystankow czy start-przesiadka- koniec
                                     if(start.isAfter(LocalDateTime.now())){
-                                        System.out.println("pojedz kursem "+c.getId()+" "+ sdtCourse1+" przesiadz sie na "
-                                                +sol1.getBusStop().getId()+" wsiadz w kurs "+c2.getId()+" "+ sdtCourse2);
+                                        System.out.println(ANSI_CYAN + "pojedz linia "+c.getBus().getLine().getId()+" "+ sdtCourse1+" przesiadz sie na przystanku "
+                                                +sol1.getBusStop().getName()+" wsiadz w linie "+c2.getBus().getLine().getId()+" "+ sdtCourse2 + ANSI_CYAN);
 
                                     }
                                     else{
-                                        System.out.println("mogleś jechać kursem "+c.getId()+" "+ sdtCourse1+" przesiadalbys sie na "
-                                                +sol1.getBusStop().getId()+" wsiadl w kurs "+c2.getId()+" "+ sdtCourse2);
+                                        System.out.println("mogleś jechać linia "+c.getBus().getLine().getId()+" "+ sdtCourse1+" przesiadalbys sie na przystanku "
+                                                +sol1.getBusStop().getName()+" wsiadl w linie "+c2.getBus().getLine().getId()+" "+ sdtCourse2);
                                     }
 
                                 }
                                 if(sol1.getBusStop().getId()==sol2.getBusStop().getId() && sdtCourse2.equals(sdtCourse1)){
                                     found=true;
                                     if(start.isBefore(LocalDateTime.now())){
-                                        System.out.println("Miales kurs bezposredni o: "+ c.getStartTime());
+                                        System.out.println("Miales kurs bezposredni o: "+ c.getStartTime()+" linia: "+c.getBus().getLine().getId());
                                     }
                                     else{
-                                        System.out.println("Masz kurs bezposredni o: "+ sdtCourse1);
+                                        System.out.println(ANSI_CYAN+ "Masz kurs bezposredni o: "+ sdtCourse1+" linia: "+c.getBus().getLine().getId()+ANSI_CYAN);
                                     }
 
                                 }
