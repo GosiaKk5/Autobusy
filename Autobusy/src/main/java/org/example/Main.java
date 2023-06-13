@@ -276,8 +276,13 @@ public class Main {
 
             //komunika o ewentualnym bledzie w podanych przystankach
             if(correct){
-                List<Course> coursesWithStart = session.createQuery("SELECT c FROM Course c, Line l, Bus b, StopOnLine so, BusStop bs WHERE c.endTime IS NOT NULL and c.bus=b.busID and b.line=l.lineID and bs.busStopID=so.busStop and so.line=l.lineID and bs.busStopID = :start", Course.class).setParameter("start", startID).getResultList();
-                List<Course> coursesWithEnd = session.createQuery("SELECT c FROM Course c, Line l, Bus b, StopOnLine so, BusStop bs WHERE c.endTime IS NOT NULL and c.bus=b.busID and b.line=l.lineID and bs.busStopID=so.busStop and so.line=l.lineID and bs.busStopID = :end", Course.class).setParameter("end", endID).getResultList();
+                List<Course> coursesWithStart =
+                        session.createQuery("SELECT c FROM Course c, Line l, Bus b, StopOnLine so, BusStop bs " +
+                                        "WHERE c.endTime IS NOT NULL and c.bus=b.busID and b.line=l.lineID and bs.busStopID=so.busStop " +
+                                        "and so.line=l.lineID and bs.busStopID = :start", Course.class).setParameter("start", startID).getResultList();
+                List<Course> coursesWithEnd = session.createQuery("SELECT c FROM Course c, Line l, Bus b, StopOnLine so, BusStop bs " +
+                        "WHERE c.endTime IS NOT NULL and c.bus=b.busID and b.line=l.lineID and bs.busStopID=so.busStop and so.line=l.lineID " +
+                        "and bs.busStopID = :end", Course.class).setParameter("end", endID).getResultList();
 
                 boolean found=false;
 
@@ -310,11 +315,13 @@ public class Main {
                                     found=true;
                                     //sprawdzenie poprawnosci przystankow czy start-przesiadka- koniec
                                     if(start.isAfter(LocalDateTime.now())){
-                                        System.out.println("pojedz kursem "+c.getId()+" "+ sdtCourse1+" przesiadz sie na "+sol1.getBusStop().getId()+" wsiadz w kurs "+c2.getId()+" "+ sdtCourse2);
+                                        System.out.println("pojedz kursem "+c.getId()+" "+ sdtCourse1+" przesiadz sie na "
+                                                +sol1.getBusStop().getId()+" wsiadz w kurs "+c2.getId()+" "+ sdtCourse2);
 
                                     }
                                     else{
-                                        System.out.println("mogleś jechać kursem "+c.getId()+" "+ sdtCourse1+" przesiadalbys sie na "+sol1.getBusStop().getId()+" wsiadl w kurs "+c2.getId()+" "+ sdtCourse2);
+                                        System.out.println("mogleś jechać kursem "+c.getId()+" "+ sdtCourse1+" przesiadalbys sie na "
+                                                +sol1.getBusStop().getId()+" wsiadl w kurs "+c2.getId()+" "+ sdtCourse2);
                                     }
 
                                 }
