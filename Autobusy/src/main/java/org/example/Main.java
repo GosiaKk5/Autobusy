@@ -17,8 +17,6 @@ class ConnectionsComparator implements Comparator<Connection> {
 
     @Override
     public int compare(Connection c1, Connection c2) {
-
-
         //czasy dojazdu do celu
         //c1 wczesniej niz c2
         if(c1.getEndTime().isBefore(c2.getEndTime())){
@@ -38,16 +36,10 @@ class ConnectionsComparator implements Comparator<Connection> {
         if(c2.getDuration().isBefore(c1.getDuration())){
             return 1;
         }
-
         //gdy te same czasy przejazdu, to mneijsza liczba przesiadek jest lepsza
         return c1.getNoLines()-c2.getNoLines();
-
-
     }
-
 }
-
-
 
 public class Main {
 
@@ -170,7 +162,6 @@ public class Main {
                 }
                 return 0;
             }
-
             //dany kurs
             if(input.get(1).equals("kurs")){
                 int courseID = Integer.parseInt(input.get(2));
@@ -192,7 +183,6 @@ public class Main {
 
                             //print
                             System.out.println((i+1)+". "+stopName+",\t data: "+sdt.toLocalDate()+",\t godzina: "+sdt.toLocalTime()+",\t odległość: "+distance+" km");
-
                         }
                         return 0;
                     }
@@ -200,7 +190,6 @@ public class Main {
                 System.out.println("Nie znaleziono takiego kursu!");
                 return 0;
             }
-
 
             //znajdowanie polaczen
             if(input.get(1).equals("polaczenia") && input.size() > 3){
@@ -210,7 +199,6 @@ public class Main {
                 //sprawdzam czy istnieja takie przystanki
                 boolean correct = false;
                 List<BusStop> busStops = session.createQuery("SELECT bs FROM BusStop bs ", BusStop.class).getResultList();
-
 
                 for(BusStop bsS : busStops){
                     if(bsS.getId() == startID){
@@ -222,7 +210,6 @@ public class Main {
                         }
                     }
                 }
-
                 //jezeli wszystko ok z przystankami
                 if(correct){
                     //zapytania do bazy
@@ -233,9 +220,6 @@ public class Main {
                     List<Course> coursesWithEnd = session.createQuery("SELECT c FROM Course c, Line l, Bus b, StopOnLine so, BusStop bs " +
                             "WHERE c.bus=b.busID and b.line=l.lineID and bs.busStopID=so.busStop and so.line=l.lineID " +
                             "and bs.busStopID = :end", Course.class).setParameter("end", endID).getResultList();
-
-
-
 
                     //szukam instancji przystanku startowego i koncowego
                     BusStop startStop = new BusStop();
@@ -253,15 +237,12 @@ public class Main {
                         }
                     }
 
-
                     //lista polaczen
                     Set<Connection> connections = new TreeSet<>(new ConnectionsComparator());
 
                     for(Course c1 : coursesWithStart){
                         LocalDateTime sdtCourse1 = c1.getStartTime();
                         LocalDateTime start=sdtCourse1;
-
-
 
                         int n = c1.getBus().getLine().getNoStops();
 
@@ -332,9 +313,7 @@ public class Main {
                     if(connections.size() == 0) {
                         System.out.println("Nie ma połaczenia z maksymalnie jedną przesiadką pomiędzy tymi przystankami!");
                     }
-                    else {
-
-
+                    else{
                         Iterator it = connections.iterator();
                         for(int i=0;i<min(15, connections.size());i++){
                             System.out.println(it.next());
@@ -345,14 +324,9 @@ public class Main {
                 else{
                     System.out.println("Nie ma takiego przystanku!");
                 }
-
-
                 return 0;
             }
-
-
             return 1;
-
         }
 
         //sprawdzenie poprawnosci biletu
@@ -366,18 +340,11 @@ public class Main {
             for(BoughtTicket bt : currTickets){
                 if(bt.getId() == ticketID){
                     correct = true;
-
                     //sprawdzilem ze istnieje/istnial taki bilet, teraz sprawdzam czy jest poprawny
                     LocalTime goodTo = bt. getBoughtTime().plusMinutes(bt.getTicket().getTime());
-                    if(goodTo.isBefore(LocalTime.now())){
-                        correct = false;
-                    }
-                    if(bt.getTicket().isAllLine() && bt.getCourse().getId()==actualCurseID){
-                        correct = true;
-                    }
-
+                    if(goodTo.isBefore(LocalTime.now())) correct = false;
+                    if(bt.getTicket().isAllLine() && bt.getCourse().getId()==actualCurseID) correct = true;
                     break;
-
                 }
             }
 
@@ -391,7 +358,6 @@ public class Main {
 
             return 0;
         }
-
         //zakup biletu
         if(input.get(0).equals("kup") && input.size() > 2){
             int ticketID = Integer.parseInt(input.get(1));
@@ -436,11 +402,7 @@ public class Main {
 
             return 0;
 
-
         }
-
-
-
         //jesli zaden wzorzec nie pasowal
         return 1;
 
@@ -450,14 +412,12 @@ public class Main {
         final Session session = getSession();
         try {
             Transaction tx = session.beginTransaction();
-
             DataCreator creator = new DataCreator();
 
             //wypelniam baze danymi
             fillDatabase(session, creator);
 
             tx.commit();
-
 
             //czekanie na komunikaty
             Scanner scanner = new Scanner(System.in);
@@ -477,11 +437,7 @@ public class Main {
                 }
             }
 
-
-
-
-
-        } finally {
+        }finally {
             session.close();
         }
     }

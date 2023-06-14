@@ -78,30 +78,6 @@ public class Connection {
             }
         }
 
-        //przechodze po kazdej linii
-//        for(int i=0;i<this.getNoLines();i++){
-//            Line line = this.lines.get(i);
-//            boolean canAdd = false;
-//            //dodaje czasy pomiedzy odpowiednimi przystankami na danej linii
-//            for(int j=0;j<line.getNoStops();j++){
-//                //jezeli moge dodawac czas to dodaje
-//                if(canAdd){
-//                    result = result.plusHours(line.getBusStop(j).getDeltaTime().getHour());
-//                    result = result.plusMinutes(line.getBusStop(j).getDeltaTime().getMinute());
-//
-//                    //sprawdzam czy nie wysiadam
-//                    if(line.getBusStop(j).getBusStop().getId() == this.busStops.get(i+1).getId()){
-//                        break;
-//                    }
-//                }
-//                //sprawdzam czy juz moge dodawac czasy
-//                else if(line.getBusStop(j).getBusStop().getId() == this.busStops.get(i).getId()) {
-//                    canAdd = true;
-//                }
-//            }
-//        }
-
-        //return
         return result;
     }
 
