@@ -255,7 +255,7 @@ public class Main {
 
 
                     //lista polaczen
-                    List<Connection> connections = new ArrayList<>();
+                    Set<Connection> connections = new HashSet<>();
 
                     for(Course c1 : coursesWithStart){
                         LocalDateTime sdtCourse1 = c1.getStartTime();
@@ -291,21 +291,26 @@ public class Main {
                                     if(sol2.getBusStop().getId() == endID){
                                         break;
                                     }
+
                                     //kurs bezposredni
                                     if(c1.getId() == c2.getId()){
                                         //sprawdzam czy przystanek startowy jest przed docelowym
-                                        for(int k=0;k<c1.getBus().getLine().getNoStops();i++){
-                                            if(c1.getBus().getLine().getBusStop(k).getBusStop().getId() == startID){
+                                        Line line = c1.getBus().getLine();
+                                        for(int k=0;k<line.getNoStops();k++){
+                                            if(line.getBusStop(k).getBusStop().getId() == startID){
                                                 Connection connection = new Connection(startStop, start);
-                                                connection.addLine(c1.getBus().getLine(), endStop, LocalTime.MIN);
+                                                connection.addLine(line, endStop, LocalTime.MIN);
 
                                                 if(!connections.contains(connection)) connections.add(connection);
+                                                break;
 
+                                            } else if (line.getBusStop(k).getBusStop().getId() == endID) {
                                                 break;
                                             }
                                         }
 
                                     }
+
                                     //kurs z przesiadka
                                     if(sol1.getBusStop().getId() == sol2.getBusStop().getId() && sdtCourse2.isAfter(sdtCourse1) && startBeforeTransfer){
                                         //czas przesiadki
@@ -329,9 +334,10 @@ public class Main {
                         System.out.println("Nie ma połaczenia z maksymalnie jedną przesiadką pomiędzy tymi przystankami!");
                     }
                     else {
-                        connections.sort(new ConnectionsComparator());
+                        List<Connection> conn = new ArrayList<>(connections);
+                        conn.sort(new ConnectionsComparator());
                         for(int i=0;i<min(15, connections.size());i++){
-                            System.out.println(connections.get(i));
+                            System.out.println(conn.get(i));
                         }
                     }
                 }
