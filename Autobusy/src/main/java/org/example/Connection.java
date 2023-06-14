@@ -117,10 +117,29 @@ public class Connection {
 
     public String toString(){
 
-        if(this.getNoLines() == 1){
-            return  "Mozesz jechac linia nr "+this.lines.get(0).getId()+" o godzinie "+this.startTime.getHour()+":"+this.startTime.getMinute();
+        LocalDateTime endTime = this.getEndTime();
+
+        String t1 = "";
+        if(this.startTime.getMinute() < 10){
+            t1 = this.startTime.getHour()+":0"+this.startTime.getMinute();
         }
-        return "Mozesz jechac linia nr "+this.lines.get(0).getId()+" o godzinie "+this.startTime.getHour()+":"+this.startTime.getMinute()+", z przesiadka na przystanku "+this.busStops.get(1).getName()+" na linie nr "+this.lines.get(1).getId();
+        else{
+            t1 = this.startTime.getHour()+":"+this.startTime.getMinute();
+        }
+
+
+        String t2 = "";
+        if(endTime.getMinute() < 10){
+            t2 = endTime.getHour()+":0"+endTime.getMinute();
+        }
+        else{
+            t2 = endTime.getHour()+":"+endTime.getMinute();
+        }
+
+        if(this.getNoLines() == 1){
+            return  "Mozesz jechac linia nr "+this.lines.get(0).getId()+" o godzinie "+t1+". Planowany przyjazd o godzinie: "+t2;
+        }
+        return "Mozesz jechac linia nr "+this.lines.get(0).getId()+" o godzinie "+t1+", z przesiadka na przystanku "+this.busStops.get(1).getName()+" na linie nr "+this.lines.get(1).getId()+". Planowany przyjazd o godzinie: "+t2;
 
     }
 }
