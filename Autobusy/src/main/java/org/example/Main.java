@@ -22,21 +22,21 @@ class ConnectionsComparator implements Comparator<Connection> {
         //czasy dojazdu do celu
         //c1 wczesniej niz c2
         if(c1.getEndTime().isBefore(c2.getEndTime())){
-            return 1;
+            return -1;
         }
         //c2 wczesniej niz c1
         if(c2.getEndTime().isBefore(c1.getEndTime())){
-            return -1;
+            return 1;
         }
 
         //ten sam czas dojazdu, ale rozne czasy przejazdu
         //c1 krotszy niz c2
         if(c1.getDuration().isBefore(c2.getDuration())){
-            return 1;
+            return -1;
         }
         //c2 krotszy niz c1
         if(c2.getDuration().isBefore(c1.getDuration())){
-            return -1;
+            return 1;
         }
 
         //gdy te same czasy przejazdu, to mneijsza liczba przesiadek jest lepsza
@@ -255,7 +255,7 @@ public class Main {
 
 
                     //lista polaczen
-                    Set<Connection> connections = new HashSet<>();
+                    Set<Connection> connections = new TreeSet<>(new ConnectionsComparator());
 
                     for(Course c1 : coursesWithStart){
                         LocalDateTime sdtCourse1 = c1.getStartTime();
@@ -334,10 +334,11 @@ public class Main {
                         System.out.println("Nie ma połaczenia z maksymalnie jedną przesiadką pomiędzy tymi przystankami!");
                     }
                     else {
-                        List<Connection> conn = new ArrayList<>(connections);
-                        conn.sort(new ConnectionsComparator());
+
+
+                        Iterator it = connections.iterator();
                         for(int i=0;i<min(15, connections.size());i++){
-                            System.out.println(conn.get(i));
+                            System.out.println(it.next());
                         }
                     }
                 }
