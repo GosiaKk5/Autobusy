@@ -22,21 +22,21 @@ class ConnectionsComparator implements Comparator<Connection> {
         //czasy dojazdu do celu
         //c1 wczesniej niz c2
         if(c1.getEndTime().isBefore(c2.getEndTime())){
-            return -1;
+            return 1;
         }
         //c2 wczesniej niz c1
         if(c2.getEndTime().isBefore(c1.getEndTime())){
-            return 1;
+            return -1;
         }
 
         //ten sam czas dojazdu, ale rozne czasy przejazdu
         //c1 krotszy niz c2
         if(c1.getDuration().isBefore(c2.getDuration())){
-            return -1;
+            return 1;
         }
         //c2 krotszy niz c1
         if(c2.getDuration().isBefore(c1.getDuration())){
-            return 1;
+            return -1;
         }
 
         //gdy te same czasy przejazdu, to mneijsza liczba przesiadek jest lepsza

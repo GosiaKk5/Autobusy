@@ -19,6 +19,28 @@ public class Connection {
         this.deltas = new ArrayList<>();
     }
 
+//    @Override
+//    public int hashCode() {
+//        int result=1;
+//        return result;
+//    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o)
+            return true;
+        if (!(o instanceof Connection))
+            return false;
+
+        Connection connection = (Connection) o;
+
+        boolean endTime = this.getEndTime().equals(((Connection) o).getEndTime());
+        boolean stop = this.busStops.equals(((Connection) o).getBusStops());
+        boolean lines = this.lines.equals(((Connection) o).getLines());
+
+        return endTime && stop && lines;
+    }
+
     public void addLine(Line line, BusStop endStop, LocalTime delta){
         this.lines.add(line);
         this.busStops.add(endStop);
@@ -27,6 +49,14 @@ public class Connection {
 
     public int getNoLines(){
         return this.lines.size();
+    }
+
+    public List<BusStop> getBusStops() {
+        return busStops;
+    }
+
+    public List<Line> getLines() {
+        return lines;
     }
 
     public LocalTime getDuration(){
