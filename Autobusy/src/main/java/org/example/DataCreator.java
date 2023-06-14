@@ -29,9 +29,7 @@ public class DataCreator {
 
         String[] stopNames = new String[]{"Kopiec", "Zamek", "Kościół", "AGH", "Miasteczko",
                 "Kopalnia", "UJ", "ZOO", "Wisła", "Błonia", "Akademik",
-                "Dworzec PKP", "Dworzec PKS", "Lotnisko", "Rynek", "Centrum Handlowe",
-                "Lodowisko", "Park", "Stadion", "Fort", "Rondo", "Zajezdnia", "Osiedle",
-                "Pizzeria", "Las", "Muzeum", "Obserwatorium astronomiczne"};
+                "Dworzec PKP", "Dworzec PKS", "Lotnisko", "Rynek", "Centrum Handlowe"};
 
         for(int i=0;i<stopNames.length;i++){
             result.add(new BusStop(stopNames[i]));
@@ -54,7 +52,7 @@ public class DataCreator {
     public List<StopOnLine> addStopsToLines(List<BusStop> stops, List<Line> lines){
         List<StopOnLine> result = new ArrayList<>();
         for(Line line : lines){
-            int nOfStops = this.randInt(5, 25);
+            int nOfStops = this.randInt(5, 15);
             for(int j=0;j<nOfStops;j++){
                 BusStop stop = stops.get(this.randInt(0, stops.size()-1));
                 LocalTime time = LocalTime.of(0, 0);
