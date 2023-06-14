@@ -232,6 +232,8 @@ public class Main {
                             "WHERE c.bus=b.busID and b.line=l.lineID and bs.busStopID=so.busStop and so.line=l.lineID " +
                             "and bs.busStopID = :end", Course.class).setParameter("end", endID).getResultList();
 
+                    int startIdx=-1;
+                    int endIdx=-1;
 
 
                     //szukam instancji przystanku startowego i koncowego
@@ -240,6 +242,7 @@ public class Main {
                     for(int i=0;i<ln.getNoStops();i++){
                         if(ln.getBusStop(i).getBusStop().getId() == startID){
                             startStop = ln.getBusStop(i).getBusStop();
+                            startIdx=ln.getBusStop(i).getOrderOnLine();
                         }
                     }
                     BusStop endStop = new BusStop();
@@ -247,6 +250,7 @@ public class Main {
                     for(int i=0;i<ln.getNoStops();i++){
                         if(ln.getBusStop(i).getBusStop().getId() == endID){
                             endStop = ln.getBusStop(i).getBusStop();
+                            endIdx=ln.getBusStop(i).getOrderOnLine();
                         }
                     }
 
@@ -258,6 +262,7 @@ public class Main {
                         LocalDateTime sdtCourse1 = c.getStartTime();
                         LocalDateTime start=sdtCourse1;
                         int n = c.getBus().getLine().getNoStops();
+
                         boolean startBeforeTransfer = false;
                         //przechodze po wszystkich przystankach tego kursu
                         for(int i=0; i<n; i++){
@@ -291,17 +296,20 @@ public class Main {
                                         Connection connection = new Connection(startStop, start);
                                         connection.addLine(c.getBus().getLine(), sol2.getBusStop(), delta.toLocalTime());
                                         connection.addLine(c2.getBus().getLine(), endStop, LocalTime.MIN);
-
-                                        connections.add(connection);
+                                        System.out.println("z przesiadka");
+                                        if(!connections.contains(connection)) connections.add(connection);
 
                                     }
-                                    if(sol1.getBusStop().getId()==sol2.getBusStop().getId() && sdtCourse2.equals(sdtCourse1)){
-
+                                    if(c.getId()==c2.getId() && startIdx<endIdx){
                                         //kurs bezposredni
+                                        System.out.println("bezposredni"+c.getId()+c2.getId()+startIdx+endIdx);
                                         Connection connection = new Connection(startStop, start);
                                         connection.addLine(c.getBus().getLine(), endStop, LocalTime.MIN);
+                                        if(!connections.contains(connection)){
+                                            connections.add(connection);
 
-                                        connections.add(connection);
+                                        }
+
 
                                     }
                                 }
@@ -313,8 +321,12 @@ public class Main {
                         System.out.println("Nie ma połaczenia z maksymalnie jedną przesiadką pomiędzy tymi przystankami!");
                     }
                     else {
+//                        System.out.println("CHECKPOINT"+connections.size());
+//                        for(int i=0;i<min(15, connections.size());i++){
+//                            System.out.println(connections.get(i).getDuration());
+//                        }
                         connections.sort(new ConnectionsComparator());
-
+                        System.out.println("POSORTOWANO");
                         for(int i=0;i<min(15, connections.size());i++){
                             System.out.println(connections.get(i));
                         }
