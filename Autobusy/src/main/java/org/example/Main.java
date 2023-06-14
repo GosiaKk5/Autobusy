@@ -301,7 +301,7 @@ public class Main {
                                                 Connection connection = new Connection(startStop, start);
                                                 connection.addLine(line, endStop, LocalTime.MIN);
 
-                                                if(!connections.contains(connection)) connections.add(connection);
+                                                if(connection.getEndTime().isAfter(LocalDateTime.now()) && !connections.contains(connection)) connections.add(connection);
                                                 break;
 
                                             } else if (line.getBusStop(k).getBusStop().getId() == endID) {
@@ -320,8 +320,7 @@ public class Main {
                                         Connection connection = new Connection(startStop, start);
                                         connection.addLine(c1.getBus().getLine(), sol2.getBusStop(), delta.toLocalTime());
                                         connection.addLine(c2.getBus().getLine(), endStop, LocalTime.MIN);
-
-                                        if(!connections.contains(connection)) connections.add(connection);
+                                        if(connection.getEndTime().isAfter(LocalDateTime.now()) && !connections.contains(connection)) connections.add(connection);
 
                                     }
 
