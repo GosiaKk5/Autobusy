@@ -121,11 +121,19 @@ public class DataCreator {
         int hourDelta = 2;
 
         for(int i=0;i<n;i++){
+
             int hour1 = randInt((actHour-hourDelta+24)%24, (actHour-1+24)%24);
             int minute = randInt(0, 59);
 
             LocalTime courseStartTime = LocalTime.of(hour1, minute);
             LocalDateTime cst = courseStartTime.atDate(date);
+
+            //okolo 50% szans na to ze kurs teraz dopiero sie zacznie (aby wyszukiwarka polaczen miala jakies wyszukania w przyszlosci)
+            if(randInt(0,9) < 4){
+                courseStartTime = now;
+                cst = actualTime;
+            }
+
 
             Course newCourse = new Course(cst, buses.get(i%nOfBuses));
 

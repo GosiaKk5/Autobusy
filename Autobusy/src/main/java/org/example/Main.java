@@ -66,7 +66,7 @@ public class Main {
         }
 
         //dodaje kursy
-        List<Course> courses = creator.createCourses(50, buses, LocalDateTime.now());
+        List<Course> courses = creator.createCourses(100, buses, LocalDateTime.now());
         for(Course course : courses){
             session.save(course);
         }
@@ -88,9 +88,9 @@ public class Main {
             System.out.println("+ wypisz kursy");
             System.out.println("+ wypisz przystanki");
             System.out.println("+ wypisz kurs *id_kursu*");
+            System.out.println("+ wypisz polaczenia *id_przystanku_startowego* *id_przystanku_koncowego*");
             System.out.println("+ sprawdz *id_biletu* *id_kursu_gdzie_bilet_jest_sprawdzany*");
             System.out.println("+ kup *id_typu_biletu* *id_kursu*");
-            System.out.println("+ znajdz polaczenie *id_przystanku_startowego* *id_przystanku_koncowego*");
             return 0;
         }
 
@@ -118,7 +118,7 @@ public class Main {
 
             //kursy
             if(input.get(1).equals("kursy")){
-                List<Course> courses = session.createQuery("SELECT c FROM Course c, Line l, Bus b WHERE c.endTime IS NOT NULL and c.bus=b.busID and b.line=l.lineID ", Course.class).getResultList();
+                List<Course> courses = session.createQuery("SELECT c FROM Course c, Line l, Bus b WHERE c.endTime IS NULL and c.bus=b.busID and b.line=l.lineID ", Course.class).getResultList();
                 System.out.println("Aktualne kursy:");
                 for(Course c : courses){
                     System.out.println(c.getId()+": "+c.getBus().getLine().getStart()+" -> "+c.getBus().getLine().getFinish()+" ("+c.getBus().getId()+")");
@@ -140,7 +140,7 @@ public class Main {
             if(input.get(1).equals("kurs")){
                 int courseID = Integer.parseInt(input.get(2));
                 System.out.println(courseID);
-                List<Course> courses = session.createQuery("SELECT c FROM Course c, Line l, Bus b WHERE c.endTime IS NOT NULL and c.bus=b.busID and b.line=l.lineID", Course.class).getResultList();
+                List<Course> courses = session.createQuery("SELECT c FROM Course c, Line l, Bus b WHERE c.endTime IS NULL and c.bus=b.busID and b.line=l.lineID", Course.class).getResultList();
 
                 for(Course c : courses){
                     if(c.getId() == courseID){
@@ -163,6 +163,103 @@ public class Main {
                     }
                 }
                 System.out.println("Nie znaleziono takiego kursu!");
+                return 0;
+            }
+
+            //znajdowanie polaczen
+            if(input.get(1).equals("polaczenia") && input.size() > 3){
+                int startID = Integer.parseInt(input.get(2));
+                int endID = Integer.parseInt(input.get(3));
+
+                //sprawdzam czy istnieja takie przystanki
+                boolean correct = false;
+                List<BusStop> busStops = session.createQuery("SELECT bs FROM BusStop bs ", BusStop.class).getResultList();
+
+
+                for(BusStop bsS : busStops){
+                    if(bsS.getId() == startID){
+                        for(BusStop bsE : busStops){
+                            if(bsE.getId() == endID){
+                                correct=true;
+                                break;
+                            }
+                        }
+                    }
+                }
+
+                //komunika o ewentualnym bledzie w podanych przystankach
+                if(correct){
+                    List<Course> coursesWithStart =
+                            session.createQuery("SELECT c FROM Course c, Line l, Bus b, StopOnLine so, BusStop bs " +
+                                    "WHERE c.bus=b.busID and b.line=l.lineID and bs.busStopID=so.busStop " +
+                                    "and so.line=l.lineID and bs.busStopID = :start", Course.class).setParameter("start", startID).getResultList();
+                    List<Course> coursesWithEnd = session.createQuery("SELECT c FROM Course c, Line l, Bus b, StopOnLine so, BusStop bs " +
+                            "WHERE c.bus=b.busID and b.line=l.lineID and bs.busStopID=so.busStop and so.line=l.lineID " +
+                            "and bs.busStopID = :end", Course.class).setParameter("end", endID).getResultList();
+
+                    boolean found=false;
+
+                    for(Course c:coursesWithStart){
+                        LocalDateTime sdtCourse1 = c.getStartTime();
+                        LocalDateTime start=sdtCourse1;
+                        int n = c.getBus().getLine().getNoStops();
+                        boolean startBeforeTransfer = false;
+                        //przechodze po wszystkich przystankach tego kursu
+                        for(int i=0;i<n;i++){
+                            StopOnLine sol1=c.getBus().getLine().getBusStop(i);
+                            sdtCourse1 = sdtCourse1.plusHours(sol1.getDeltaTime().getHour());
+                            sdtCourse1 = sdtCourse1.plusMinutes(sol1.getDeltaTime().getMinute());
+                            if(sol1.getBusStop().getId()==startID){
+                                startBeforeTransfer=true;
+                                start=sdtCourse1;
+                            }
+                            //dla kazdego przystanku sprawdzam wszystkie kursy do koncowego
+                            for(Course c2:coursesWithEnd){
+                                LocalDateTime sdtCourse2 = c2.getStartTime();
+                                int n1 = c2.getBus().getLine().getNoStops();
+                                for(int j=0;j<n1;j++) {
+                                    StopOnLine sol2 = c2.getBus().getLine().getBusStop(j);
+                                    sdtCourse2 = sdtCourse2.plusHours(sol2.getDeltaTime().getHour());
+                                    sdtCourse2 = sdtCourse2.plusMinutes(sol2.getDeltaTime().getMinute());
+                                    if(sol2.getBusStop().getId()==endID){
+                                        break;
+                                    }
+                                    if(sol1.getBusStop().getId()==sol2.getBusStop().getId() && sdtCourse2.isAfter(sdtCourse1) && startBeforeTransfer){
+                                        found=true;
+                                        //sprawdzenie poprawnosci przystankow czy start-przesiadka- koniec
+                                        if(start.isAfter(LocalDateTime.now())){
+                                            System.out.println(ANSI_CYAN + "Pojedz linia "+c.getBus().getLine().getId()+" "+ sdtCourse1+", przesiadz sie na przystanku "
+                                                    +sol1.getBusStop().getName()+" i wsiadz w linie nr "+c2.getBus().getLine().getId()+" "+ sdtCourse2 + ANSI_CYAN);
+
+                                        }
+                                        else{
+                                            System.out.println("Mogleś jechać linia "+c.getBus().getLine().getId()+" "+ sdtCourse1+", przesiadalbys sie na przystanku "
+                                                    +sol1.getBusStop().getName()+" i wsiadl w linie "+c2.getBus().getLine().getId()+" "+ sdtCourse2);
+                                        }
+
+                                    }
+                                    if(sol1.getBusStop().getId()==sol2.getBusStop().getId() && sdtCourse2.equals(sdtCourse1)){
+                                        found=true;
+                                        if(start.isBefore(LocalDateTime.now())){
+                                            System.out.println("Miales kurs bezposredni o: "+ c.getStartTime()+" linia: "+c.getBus().getLine().getId());
+                                        }
+                                        else{
+                                            System.out.println(ANSI_CYAN+ "Masz kurs bezposredni o: "+ sdtCourse1+" linia: "+c.getBus().getLine().getId()+ANSI_CYAN);
+                                        }
+
+                                    }
+                                }
+                            }
+
+                        }
+                    }
+                    if(!found) System.out.println("Nie ma połaczenia z maksymalnie jedną przesiadką pomiędzy tymi przystankami!");
+                }
+                else{
+                    System.out.println("Nie ma takiego przystanku!");
+                }
+
+
                 return 0;
             }
 
@@ -215,7 +312,7 @@ public class Main {
 
             //sprawdzam czy jest taki kurs
             Course myCourse = null;
-            List<Course> courses = session.createQuery("SELECT c FROM Course c WHERE c.endTime IS NOT NULL ", Course.class).getResultList();
+            List<Course> courses = session.createQuery("SELECT c FROM Course c WHERE c.endTime IS NULL ", Course.class).getResultList();
             for(Course course : courses){
                 if(course.getId() == courseID){
                     myCourse = course;
@@ -254,103 +351,8 @@ public class Main {
 
 
         }
-        //znajdowanie kursu
-
-        if(input.get(0).equals("znajdz") && input.get(1).equals("polaczenie") && input.size() > 3){
-            int startID = Integer.parseInt(input.get(2));
-            int endID = Integer.parseInt(input.get(3));
-
-            //sprawdzam czy istnieja takie przystanki
-            boolean correct = false;
-            List<BusStop> busStops = session.createQuery("SELECT bs FROM BusStop bs ", BusStop.class).getResultList();
 
 
-            for(BusStop bsS : busStops){
-                if(bsS.getId() == startID){
-                    for(BusStop bsE : busStops){
-                        if(bsE.getId() == endID){
-                            correct=true;
-                            break;
-                        }
-                    }
-                }
-            }
-
-            //komunika o ewentualnym bledzie w podanych przystankach
-            if(correct){
-                List<Course> coursesWithStart =
-                        session.createQuery("SELECT c FROM Course c, Line l, Bus b, StopOnLine so, BusStop bs " +
-                                        "WHERE c.endTime IS NOT NULL and c.bus=b.busID and b.line=l.lineID and bs.busStopID=so.busStop " +
-                                        "and so.line=l.lineID and bs.busStopID = :start", Course.class).setParameter("start", startID).getResultList();
-                List<Course> coursesWithEnd = session.createQuery("SELECT c FROM Course c, Line l, Bus b, StopOnLine so, BusStop bs " +
-                        "WHERE c.endTime IS NOT NULL and c.bus=b.busID and b.line=l.lineID and bs.busStopID=so.busStop and so.line=l.lineID " +
-                        "and bs.busStopID = :end", Course.class).setParameter("end", endID).getResultList();
-
-                boolean found=false;
-
-                for(Course c:coursesWithStart){
-                    LocalDateTime sdtCourse1 = c.getStartTime();
-                    LocalDateTime start=sdtCourse1;
-                    int n = c.getBus().getLine().getNoStops();
-                    boolean startBeforeTransfer = false;
-                    //przechodze po wszystkich przystankach tego kursu
-                    for(int i=0;i<n;i++){
-                        StopOnLine sol1=c.getBus().getLine().getBusStop(i);
-                        sdtCourse1 = sdtCourse1.plusHours(sol1.getDeltaTime().getHour());
-                        sdtCourse1 = sdtCourse1.plusMinutes(sol1.getDeltaTime().getMinute());
-                        if(sol1.getBusStop().getId()==startID){
-                            startBeforeTransfer=true;
-                            start=sdtCourse1;
-                        }
-                        //dla kazdego przystanku sprawdzam wszystkie kursy do koncowego
-                        for(Course c2:coursesWithEnd){
-                            LocalDateTime sdtCourse2 = c2.getStartTime();
-                            int n1 = c2.getBus().getLine().getNoStops();
-                            for(int j=0;j<n1;j++) {
-                                StopOnLine sol2 = c2.getBus().getLine().getBusStop(j);
-                                sdtCourse2 = sdtCourse2.plusHours(sol2.getDeltaTime().getHour());
-                                sdtCourse2 = sdtCourse2.plusMinutes(sol2.getDeltaTime().getMinute());
-                                if(sol2.getBusStop().getId()==endID){
-                                    break;
-                                }
-                                if(sol1.getBusStop().getId()==sol2.getBusStop().getId() && sdtCourse2.isAfter(sdtCourse1) && startBeforeTransfer){
-                                    found=true;
-                                    //sprawdzenie poprawnosci przystankow czy start-przesiadka- koniec
-                                    if(start.isAfter(LocalDateTime.now())){
-                                        System.out.println(ANSI_CYAN + "pojedz linia "+c.getBus().getLine().getId()+" "+ sdtCourse1+" przesiadz sie na przystanku "
-                                                +sol1.getBusStop().getName()+" wsiadz w linie "+c2.getBus().getLine().getId()+" "+ sdtCourse2 + ANSI_CYAN);
-
-                                    }
-                                    else{
-                                        System.out.println("mogleś jechać linia "+c.getBus().getLine().getId()+" "+ sdtCourse1+" przesiadalbys sie na przystanku "
-                                                +sol1.getBusStop().getName()+" wsiadl w linie "+c2.getBus().getLine().getId()+" "+ sdtCourse2);
-                                    }
-
-                                }
-                                if(sol1.getBusStop().getId()==sol2.getBusStop().getId() && sdtCourse2.equals(sdtCourse1)){
-                                    found=true;
-                                    if(start.isBefore(LocalDateTime.now())){
-                                        System.out.println("Miales kurs bezposredni o: "+ c.getStartTime()+" linia: "+c.getBus().getLine().getId());
-                                    }
-                                    else{
-                                        System.out.println(ANSI_CYAN+ "Masz kurs bezposredni o: "+ sdtCourse1+" linia: "+c.getBus().getLine().getId()+ANSI_CYAN);
-                                    }
-
-                                }
-                            }
-                        }
-
-                    }
-                }
-                if(!found) System.out.println("Nie ma połaczenia z maksymalnie jedną przesiadką pomiędzy tymi przystankami!");
-            }
-            else{
-                System.out.println("Nie ma takiego przystanku!");
-            }
-
-
-            return 0;
-        }
 
         //jesli zaden wzorzec nie pasowal
         return 1;
