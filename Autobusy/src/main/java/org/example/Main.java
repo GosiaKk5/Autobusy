@@ -201,6 +201,7 @@ public class Main {
                 return 0;
             }
 
+
             //znajdowanie polaczen
             if(input.get(1).equals("polaczenia") && input.size() > 3){
                 int startID = Integer.parseInt(input.get(2));
@@ -222,8 +223,9 @@ public class Main {
                     }
                 }
 
-                //komunika o ewentualnym bledzie w podanych przystankach
+                //jezeli wszystko ok z przystankami
                 if(correct){
+                    //zapytania do bazy
                     List<Course> coursesWithStart =
                             session.createQuery("SELECT c FROM Course c, Line l, Bus b, StopOnLine so, BusStop bs WHERE c.bus=b.busID and " +
                                     "b.line=l.lineID and bs.busStopID=so.busStop and so.line=l.lineID and " +
@@ -232,8 +234,7 @@ public class Main {
                             "WHERE c.bus=b.busID and b.line=l.lineID and bs.busStopID=so.busStop and so.line=l.lineID " +
                             "and bs.busStopID = :end", Course.class).setParameter("end", endID).getResultList();
 
-                    int startIdx=-1;
-                    int endIdx=-1;
+
 
 
                     //szukam instancji przystanku startowego i koncowego
@@ -242,7 +243,6 @@ public class Main {
                     for(int i=0;i<ln.getNoStops();i++){
                         if(ln.getBusStop(i).getBusStop().getId() == startID){
                             startStop = ln.getBusStop(i).getBusStop();
-                            startIdx=ln.getBusStop(i).getOrderOnLine();
                         }
                     }
                     BusStop endStop = new BusStop();
@@ -250,7 +250,6 @@ public class Main {
                     for(int i=0;i<ln.getNoStops();i++){
                         if(ln.getBusStop(i).getBusStop().getId() == endID){
                             endStop = ln.getBusStop(i).getBusStop();
-                            endIdx=ln.getBusStop(i).getOrderOnLine();
                         }
                     }
 
@@ -258,20 +257,23 @@ public class Main {
                     //lista polaczen
                     List<Connection> connections = new ArrayList<>();
 
-                    for(Course c : coursesWithStart){
-                        LocalDateTime sdtCourse1 = c.getStartTime();
+                    for(Course c1 : coursesWithStart){
+                        LocalDateTime sdtCourse1 = c1.getStartTime();
                         LocalDateTime start=sdtCourse1;
-                        int n = c.getBus().getLine().getNoStops();
+
+
+
+                        int n = c1.getBus().getLine().getNoStops();
 
                         boolean startBeforeTransfer = false;
                         //przechodze po wszystkich przystankach tego kursu
                         for(int i=0; i<n; i++){
-                            StopOnLine sol1 = c.getBus().getLine().getBusStop(i);
+                            StopOnLine sol1 = c1.getBus().getLine().getBusStop(i);
                             sdtCourse1 = sdtCourse1.plusHours(sol1.getDeltaTime().getHour());
                             sdtCourse1 = sdtCourse1.plusMinutes(sol1.getDeltaTime().getMinute());
-                            if(sol1.getBusStop().getId()==startID){
-                                startBeforeTransfer=true;
-                                start=sdtCourse1;
+                            if(sol1.getBusStop().getId() == startID){
+                                startBeforeTransfer = true;
+                                start = sdtCourse1;
                                 //nie interesuje nas to co bylo
                                 if(start.isBefore(LocalDateTime.now())){
                                     break;
@@ -285,33 +287,39 @@ public class Main {
                                     StopOnLine sol2 = c2.getBus().getLine().getBusStop(j);
                                     sdtCourse2 = sdtCourse2.plusHours(sol2.getDeltaTime().getHour());
                                     sdtCourse2 = sdtCourse2.plusMinutes(sol2.getDeltaTime().getMinute());
-                                    if(sol2.getBusStop().getId()==endID){
+                                    //jezeli doszedlem do przystanku docelowego to nie ma sensu dalej iterowac
+                                    if(sol2.getBusStop().getId() == endID){
                                         break;
                                     }
-                                    if(sol1.getBusStop().getId()==sol2.getBusStop().getId() && sdtCourse2.isAfter(sdtCourse1) && startBeforeTransfer){
+                                    //kurs bezposredni
+                                    if(c1.getId() == c2.getId()){
+                                        //sprawdzam czy przystanek startowy jest przed docelowym
+                                        for(int k=0;k<c1.getBus().getLine().getNoStops();i++){
+                                            if(c1.getBus().getLine().getBusStop(k).getBusStop().getId() == startID){
+                                                Connection connection = new Connection(startStop, start);
+                                                connection.addLine(c1.getBus().getLine(), endStop, LocalTime.MIN);
+
+                                                if(!connections.contains(connection)) connections.add(connection);
+
+                                                break;
+                                            }
+                                        }
+
+                                    }
+                                    //kurs z przesiadka
+                                    if(sol1.getBusStop().getId() == sol2.getBusStop().getId() && sdtCourse2.isAfter(sdtCourse1) && startBeforeTransfer){
                                         //czas przesiadki
                                         LocalDateTime delta = sdtCourse2.minusHours(sdtCourse1.getHour());
                                         delta = delta.minusMinutes(sdtCourse1.getMinute());
-                                        //przesiadka
+
                                         Connection connection = new Connection(startStop, start);
-                                        connection.addLine(c.getBus().getLine(), sol2.getBusStop(), delta.toLocalTime());
+                                        connection.addLine(c1.getBus().getLine(), sol2.getBusStop(), delta.toLocalTime());
                                         connection.addLine(c2.getBus().getLine(), endStop, LocalTime.MIN);
-                                        System.out.println("z przesiadka");
+
                                         if(!connections.contains(connection)) connections.add(connection);
 
                                     }
-                                    if(c.getId()==c2.getId() && startIdx<endIdx){
-                                        //kurs bezposredni
-                                        System.out.println("bezposredni"+c.getId()+c2.getId()+startIdx+endIdx);
-                                        Connection connection = new Connection(startStop, start);
-                                        connection.addLine(c.getBus().getLine(), endStop, LocalTime.MIN);
-                                        if(!connections.contains(connection)){
-                                            connections.add(connection);
 
-                                        }
-
-
-                                    }
                                 }
                             }
 
@@ -321,17 +329,13 @@ public class Main {
                         System.out.println("Nie ma połaczenia z maksymalnie jedną przesiadką pomiędzy tymi przystankami!");
                     }
                     else {
-//                        System.out.println("CHECKPOINT"+connections.size());
-//                        for(int i=0;i<min(15, connections.size());i++){
-//                            System.out.println(connections.get(i).getDuration());
-//                        }
                         connections.sort(new ConnectionsComparator());
-                        System.out.println("POSORTOWANO");
                         for(int i=0;i<min(15, connections.size());i++){
                             System.out.println(connections.get(i));
                         }
                     }
                 }
+                //jezeli jest problem z przystankami
                 else{
                     System.out.println("Nie ma takiego przystanku!");
                 }

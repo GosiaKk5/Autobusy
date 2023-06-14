@@ -31,9 +31,9 @@ public class Connection {
 
     public LocalTime getDuration(){
         LocalTime result = LocalTime.MIN;
-        System.out.println("ZACZYNAM"+this.busStops.size()+this.busStops.get(0).getId()+busStops.get(1).getId()+lines.get(0).getId());
 
-        if(this.lines.size()==1){
+        //bez przesiadek
+        if(this.lines.size() == 1){
             BusStop start = this.busStops.get(0);
             StopOnLine lineStop = this.lines.get(0).getBusStop(0);
             int j=1;
@@ -42,10 +42,7 @@ public class Connection {
                 j+=1;
             }
             //linestop jest teraz tym na ktorym wsiadam
-//            System.out.println("wsiadam"+lineStop.getBusStop().getId());
-//            System.out.println(this.lines.get(0).getNoStops());
             while(lineStop.getBusStop().getId()!=this.busStops.get(1).getId()){
-//                System.out.println("przystanek"+lineStop.getBusStop().getId()+j);
                 lineStop=this.lines.get(0).getBusStop(j);
                 result=result.plusMinutes(lineStop.getDeltaTime().getMinute());
                 result=result.plusHours(lineStop.getDeltaTime().getHour());
@@ -67,45 +64,43 @@ public class Connection {
             int j = 0;
             BusStop start = this.busStops.get(i);
             StopOnLine lineStop = this.lines.get(i).getBusStop(j);
-//            System.out.println(lineStop);
-//            BusStop stop2 = this.busStops.get(i+1);
-//            boolean shouldAdd = false;
             //do startu
             while (lineStop.getBusStop().getId() != start.getId()) {
                 j += 1;
                 lineStop = this.lines.get(i).getBusStop(j);
             }
-//            System.out.println("to tez moze byc null "+this.busStops.get(i + 1).getId());
-//            System.out.println("to moze byc null "+lineStop.getBusStop().getId());
+            //dodaje czasy
             while (lineStop.getBusStop().getId() != this.busStops.get(i + 1).getId()) {
                 j += 1;
                 result = result.plusHours(lineStop.getDeltaTime().getHour());
                 result = result.plusMinutes(lineStop.getDeltaTime().getMinute());
                 lineStop = this.lines.get(i).getBusStop(j);
-//                System.out.println(lineStop);
             }
         }
 
-
-            //iteruje po przystankach na linii
-//            for(int j=0;j<line.getNoStops();i++){
-//                StopOnLine currStop = line.getBusStop(j);
-//                if(shouldAdd){
-//                    //dodaje czas
-//                    result = result.plusHours(currStop.getDeltaTime().getHour());
-//                    result = result.plusMinutes(currStop.getDeltaTime().getMinute());
+        //przechodze po kazdej linii
+//        for(int i=0;i<this.getNoLines();i++){
+//            Line line = this.lines.get(i);
+//            boolean canAdd = false;
+//            //dodaje czasy pomiedzy odpowiednimi przystankami na danej linii
+//            for(int j=0;j<line.getNoStops();j++){
+//                //jezeli moge dodawac czas to dodaje
+//                if(canAdd){
+//                    result = result.plusHours(line.getBusStop(j).getDeltaTime().getHour());
+//                    result = result.plusMinutes(line.getBusStop(j).getDeltaTime().getMinute());
 //
-//                    //sprawdzam czy sie nie przesiadam na kolejna linie
-//                    if(stop2.getId() == currStop.getBusStop().getId()){
+//                    //sprawdzam czy nie wysiadam
+//                    if(line.getBusStop(j).getBusStop().getId() == this.busStops.get(i+1).getId()){
 //                        break;
 //                    }
 //                }
-            //sprawdzam czy od kolejnego przystanku nie bede mogl juz dodawc czasu
-//                else if(stop1.getId() == currStop.getBusStop().getId()) {
-//                    shouldAdd = true;
+//                //sprawdzam czy juz moge dodawac czasy
+//                else if(line.getBusStop(j).getBusStop().getId() == this.busStops.get(i).getId()) {
+//                    canAdd = true;
 //                }
 //            }
 //        }
+
         //return
         return result;
     }
